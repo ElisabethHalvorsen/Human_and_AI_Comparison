@@ -357,4 +357,7 @@ CATKIN_IGNORE
 .history
 .ionide
 
+.catkin_tools/
+.idea/
+
 # End of https://www.toptal.com/developers/gitignore/api/python,pycharm,visualstudiocode,jupyternotebooks,ros

@@ -1,3 +1,4 @@
+import carla
 from pandas import DataFrame
 
 
@@ -40,3 +41,9 @@ def merge_two_and_more_vehicle_crashes(df: DataFrame) -> DataFrame:
 
 def print_to_html(df: DataFrame, file_name: str):
     df.to_html(f'outputs/{file_name}.html')
+
+
+if __name__ == '__main__':
+    client = carla.Client('localhost', 2000)
+    world = client.get_world()
+#%%
