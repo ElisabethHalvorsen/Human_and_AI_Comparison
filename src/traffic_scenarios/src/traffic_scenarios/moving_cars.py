@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
+import enum
 
 import rospy
 from carla import Location, Client, Transform, Rotation, World
 import random
+import carla
 
 TOLERANCE = 10
 
@@ -59,20 +61,21 @@ def destroy_car(car):
     car.set_autopilot(False)
     car.destroy()
 
+
 def run(car: list):
     if car is not None:
         car.set_autopilot(True)
 
 
-
 class MovingCars:
     """Class that when called spawns cars on the road with a frequency between 0 and 100 where 100 is the max
     frequency """
+
     def __init__(self, connect: Connect, frequency: int):
         if not (0 <= frequency <= 100):
             raise ValueError("Frequency must be between 0 and 100")
         self._connect = connect
-        self._frequency = 10*(1+(1-frequency/100))
+        self._frequency = 10 * (1 + (1 - frequency / 100))
         self.vehicle_choices = self._connect.get_blueprint_lib().filter('vehicle.*')
         self.current = 0
         self._cars = []
@@ -98,6 +101,50 @@ class MovingCars:
                 run(car)
 
 
+class Weather(enum.Enum):
+    FOGGY = 0
+    SUNNY = 1
+    RAINY = 2
+
+
+class WeatherScenario:
+    def __init__(self, connect: Connect, weather: Weather, intensity: int):
+        if not (0 <= intensity <= 100):
+            raise ValueError("Frequency must be between 0 and 100")
+        self._weather = weather
+        self._connect = connect
+        self._intensity = intensity
+
+    # TODO: change tire friction
+    def get_rain_parameters(self):
+        w = carla.WeatherParameters()
+        w.precipitation = self._intensity
+        w.wetness = self._intensity
+        w.cloudiness = 40
+        return w
+
+    def get_fogg_parameters(self):
+        w = carla.WeatherParameters()
+        w.fog_density = self._intensity
+        return w
+
+    def get_sun_parameters(self):
+        w = carla.WeatherParameters()
+        w.sun_altitude_angle = 17.0
+        w.sun_azimuth_angle = 5.0
+        return w
+
+    def main(self):
+        weather = carla.WeatherParameters()
+        if self._weather == Weather.FOGGY:
+            weather = self.get_fogg_parameters()
+        elif self._weather == Weather.SUNNY:
+            weather = self.get_sun_parameters()
+        elif self._weather == Weather.RAINY:
+            weather = self.get_rain_parameters()
+        self._connect.get_world().set_weather(weather)
+
+
 # TODO: objective function
 # Sun = [0, 100]
 # Rain = [0, 100]
@@ -110,11 +157,13 @@ if __name__ == '__main__':
     rospy.init_node("moving_cars_node", anonymous=True)
     _connect = Connect()
     # print(get_current_location_carla(_connect))
-    mc = MovingCars(_connect, -1)
-    mc.main()
-    #
+    # mc = MovingCars(_connect, -1)
+    # mc.main()
+    ws = WeatherScenario(_connect, Weather.SUNNY, 100)
+    ws.main()
 
-    actor_list = _connect.get_world().get_actors()
+
+    # actor_list = _connect.get_world().get_actors()
     # Print the location of all the speed limit signs in the world.
 
     # for a in actor_list.filter('vehicle.*'):
