@@ -91,14 +91,21 @@ class MovingCars:
 
     def main(self):
         car = self.spawn_actor(RIGHT_START, random.choice(self.vehicle_choices))
+        car2 = self.spawn_actor(LEFT_START, random.choice(self.vehicle_choices))
         time = rospy.Time.now()
+        rospy.sleep(0.5)
         run(car)
+        rospy.sleep(0.5)
+        run(car2)
         while not rospy.is_shutdown():
             if time + rospy.Duration(self._frequency) < rospy.Time.now():
                 time = rospy.Time.now()
                 car = self.spawn_actor(RIGHT_START, random.choice(self.vehicle_choices))
-                rospy.sleep(1)  # let actor spawn
+                rospy.sleep(0.5)  # let actor spawn
                 run(car)
+                car2 = self.spawn_actor(LEFT_START, random.choice(self.vehicle_choices))
+                rospy.sleep(0.5)  # let actor spawn
+                run(car2)
 
 
 class Weather(enum.Enum):
@@ -157,10 +164,10 @@ if __name__ == '__main__':
     rospy.init_node("moving_cars_node", anonymous=True)
     _connect = Connect()
     # print(get_current_location_carla(_connect))
-    # mc = MovingCars(_connect, -1)
-    # mc.main()
-    ws = WeatherScenario(_connect, Weather.SUNNY, 100)
-    ws.main()
+    mc = MovingCars(_connect, 100)
+    mc.main()
+    # ws = WeatherScenario(_connect, Weather.SUNNY, 100)
+    # ws.main()
 
 
     # actor_list = _connect.get_world().get_actors()
