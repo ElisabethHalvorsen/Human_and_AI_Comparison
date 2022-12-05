@@ -17,6 +17,9 @@ RIGHT_START = Transform(Location(x=81.236206, y=-121.202599, z=9.501081),
 LEFT_START = Transform(Location(x=111.329628, y=-7.114077, z=1.522039),
                        Rotation(pitch=-29.011528, yaw=-179.341934, roll=-0.000610))
 
+PEDESTRIAN_START = Transform(Location(x=92.980034, y=-69.512383, z=8.472011),
+                             Rotation(pitch=-1.411739, yaw=-85.510864, roll=0.000913))
+
 
 class Connect:
     def __init__(self):
@@ -61,6 +64,12 @@ def destroy_all_vehicles(connect: Connect):
     actor_list = connect.get_world().get_actors()
     for a in actor_list.filter('vehicle.*'):
         a.set_autopilot(False)
+        a.destroy()
+
+
+def destroy_all_pedestrians(connect: Connect):
+    actor_list = connect.get_world().get_actors()
+    for a in actor_list.filter('walker.pedestrian.*'):
         a.destroy()
 
 
@@ -149,16 +158,35 @@ class WeatherScenario:
         self._connect.get_world().set_weather(weather)
 
 
-class BikerScenario:
-    def __init__(self, connect: Connect, intensity: int):
-        if not (0 <= intensity <= 100):
+class CrosserScenario:
+    def __init__(self, connect: Connect, frequency: int):
+        if not (0 <= frequency <= 100):
             raise ValueError("Frequency must be between 0 and 100")
-        self._intensity = intensity
+        self._frequency = 100 * (1 + (1 - frequency / 100))
         self._connect = connect
+        self._world = connect.get_world()
+        self._walker_bp = self._connect.get_blueprint_lib().filter('walker.pedestrian.*')
+        self._controller_bp = self._connect.get_blueprint_lib().find('controller.ai.walker')
+
+    def spawn_pedestrian(self):
+        walker = random.choice(self._walker_bp)
+        actor = self._world.try_spawn_actor(walker, PEDESTRIAN_START)
+        self._world.wait_for_tick()
+        controller = self._world.spawn_actor(self._controller_bp, Transform(), actor)
+        self._world.wait_for_tick()
+        controller.start()
+        controller.go_to_location(Location(x=116.000916, y=-124.104126, z=9.909193))
+
+    def main(self):
+        self.spawn_pedestrian()
+        time = rospy.Time.now()
+        while not rospy.is_shutdown():
+            if time + rospy.Duration(self._frequency) < rospy.Time.now():
+                time = rospy.Time.now()
+                self.spawn_pedestrian()
 
 
 # TODO: objective function
-# Biker driving over [0, 100] -> 100 drives over without notice, 50 stops and then drives over, 0 no driver
 # TODO: Define safety targets
 # TODO: Measure where on road car must be, get points every second of a perfect drive
 # TODO: how far away is the car from other cars
@@ -166,15 +194,15 @@ class BikerScenario:
 if __name__ == '__main__':
     rospy.init_node("moving_cars_node", anonymous=True)
     _connect = Connect()
-    # print(get_current_location_carla(_connect))
+    print(get_current_location_carla(_connect))
+    destroy_all_pedestrians(_connect)
+    # print(tf)
+
     # mc = MovingCars(_connect, 100)
     # mc.main()
+
     # ws = WeatherScenario(_connect, Weather.SUNNY, 100)
     # ws.main()
 
-    # actor_list = _connect.get_world().get_actors()
-    # Print the location of all the speed limit signs in the world.
-    #
-    # for a in actor_list.filter('vehicle.*'):
-    #     a.set_autopilot(False)
-    #     a.destroy()
+    cs = CrosserScenario(_connect, 100)
+    cs.main()
