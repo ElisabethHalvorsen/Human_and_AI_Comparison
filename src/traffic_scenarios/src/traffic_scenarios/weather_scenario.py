@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import rospy
 from carla import WeatherParameters
 from traffic_scenarios.utils.connect import Connect
 from traffic_scenarios.models.weather import Weather
@@ -40,3 +41,11 @@ class WeatherScenario:
         elif self._weather == Weather.RAINY:
             weather = self.get_rain_parameters()
         self._connect.get_world().set_weather(weather)
+
+
+if __name__ == '__main__':
+    rospy.init_node("weather_node", anonymous=True)
+    _connect = Connect()
+    ws = WeatherScenario(_connect, Weather.SUNNY, 100)
+    ws.main()
+    rospy.spin()

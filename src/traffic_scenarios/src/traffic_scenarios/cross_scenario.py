@@ -5,15 +5,15 @@ import random
 from traffic_scenarios.utils.connect import Connect
 from carla import Location, Transform, Rotation
 
-
 PEDESTRIAN_START = Transform(Location(x=92.980034, y=-69.512383, z=8.472011),
                              Rotation(pitch=-1.411739, yaw=-85.510864, roll=0.000913))
+
 
 class CrosserScenario:
     def __init__(self, connect: Connect, frequency: int):
         if not (0 <= frequency <= 100):
             raise ValueError("Frequency must be between 0 and 100")
-        self._frequency = 100 * (1 + (1 - frequency / 100))
+        self._frequency = 50 * (1 + (1 - frequency / 100))
         self._connect = connect
         self._world = connect.get_world()
         self._walker_bp = self._connect.get_blueprint_lib().filter('walker.pedestrian.*')
@@ -35,3 +35,10 @@ class CrosserScenario:
             if time + rospy.Duration(self._frequency) < rospy.Time.now():
                 time = rospy.Time.now()
                 self.spawn_pedestrian()
+
+
+if __name__ == '__main__':
+    rospy.init_node("pedestrian_node", anonymous=True)
+    _connect = Connect()
+    ws = CrosserScenario(_connect, 100)
+    ws.main()

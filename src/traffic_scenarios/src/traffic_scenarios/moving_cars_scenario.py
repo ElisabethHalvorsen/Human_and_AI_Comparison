@@ -73,7 +73,7 @@ class MovingCars:
 # TODO: how far away is the car from other cars
 
 if __name__ == '__main__':
-    rospy.init_node("moving_cars_node", anonymous=True)
+    rospy.init_node("car_spawning_node", anonymous=True)
     _connect = Connect()
     # print(get_current_location_carla(_connect))
     # destroy_all_pedestrians(_connect)
