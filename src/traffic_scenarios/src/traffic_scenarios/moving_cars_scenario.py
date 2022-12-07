@@ -3,11 +3,6 @@ import rospy
 from carla import Location, Transform, Rotation
 import random
 from traffic_scenarios.utils.connect import Connect
-from traffic_scenarios.cross_scenario import CrosserScenario
-from traffic_scenarios.weather_scenario import WeatherScenario
-from traffic_scenarios.models.weather import Weather
-from traffic_scenarios.helpers.location_helpers import is_at_end, get_current_location_carla
-from traffic_scenarios.helpers.destroy_helpers import destroy_all_pedestrians
 
 TOLERANCE = 10
 
@@ -34,7 +29,10 @@ class MovingCars:
         if not (0 <= frequency <= 100):
             raise ValueError("Frequency must be between 0 and 100")
         self._connect = connect
-        self._frequency = 10 * (1 + (1 - frequency / 100))
+        if frequency == 0:
+            self._frequency = 0
+        else:
+            self._frequency = 10 * (1 + (1 - frequency / 100))
         self.vehicle_choices = self._connect.get_blueprint_lib().filter('vehicle.*')
         self.current = 0
         self._cars = []
@@ -49,6 +47,8 @@ class MovingCars:
         self._cars.append(car)
 
     def main(self):
+        if self._frequency == 0:
+            return
         car = self.spawn_actor(RIGHT_START, random.choice(self.vehicle_choices))
         car2 = self.spawn_actor(LEFT_START, random.choice(self.vehicle_choices))
         time = rospy.Time.now()
@@ -75,15 +75,6 @@ class MovingCars:
 if __name__ == '__main__':
     rospy.init_node("car_spawning_node", anonymous=True)
     _connect = Connect()
-    # print(get_current_location_carla(_connect))
-    # destroy_all_pedestrians(_connect)
-    # print(tf)
-
-    mc = MovingCars(_connect, 100)
+    mc = MovingCars(_connect, 0)
     mc.main()
-    #
-    # ws = WeatherScenario(_connect, Weather.SUNNY, 100)
-    # ws.main()
-
-    # cs = CrosserScenario(_connect, 100)
-    # cs.main()
+    rospy.spin()
