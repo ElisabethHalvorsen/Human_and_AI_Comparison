@@ -1,5 +1,5 @@
 import enum
-from weather import Weather
+from traffic_scenarios.models.weather import Weather
 
 
 class Scenario(enum.Enum):
@@ -31,4 +31,4 @@ SCENARIOS = {
 
 
 def current_scenario():
-    return Scenario.S1
+    return SCENARIOS[Scenario.S1]
