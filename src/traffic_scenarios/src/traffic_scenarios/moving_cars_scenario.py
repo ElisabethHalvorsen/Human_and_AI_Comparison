@@ -3,6 +3,7 @@ import rospy
 from carla import Location, Transform, Rotation
 import random
 from traffic_scenarios.utils.connect import Connect
+from traffic_scenarios.models.scenario import Scenario, get_current_scenario
 
 TOLERANCE = 10
 
@@ -36,7 +37,6 @@ class MovingCars:
         self.vehicle_choices = self._connect.get_blueprint_lib().filter('vehicle.*')
         self.current = 0
         self._cars = []
-        print(self._frequency)
 
     def spawn_actor(self, transform: Transform, bp):
         return self._connect.get_world().try_spawn_actor(bp, transform)
@@ -69,6 +69,8 @@ class MovingCars:
 if __name__ == '__main__':
     rospy.init_node("car_spawning_node", anonymous=True)
     _connect = Connect()
-    mc = MovingCars(_connect, 100)
+    scenario = get_current_scenario()
+    frequency = scenario["cars"]
+    mc = MovingCars(_connect, frequency)
     mc.main()
     rospy.spin()
