@@ -30,5 +30,5 @@ SCENARIOS = {
 }
 
 
-def current_scenario():
+def get_current_scenario():
     return SCENARIOS[Scenario.S1]

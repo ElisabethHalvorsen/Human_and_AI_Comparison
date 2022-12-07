@@ -4,6 +4,7 @@ import rospy
 from carla import WeatherParameters
 from traffic_scenarios.utils.connect import Connect
 from traffic_scenarios.models.weather import Weather
+from traffic_scenarios.models.scenario import Scenario, get_current_scenario
 
 class WeatherScenario:
     def __init__(self, connect: Connect, weather: Weather, intensity: int):
@@ -46,6 +47,9 @@ class WeatherScenario:
 if __name__ == '__main__':
     rospy.init_node("weather_node", anonymous=True)
     _connect = Connect()
-    ws = WeatherScenario(_connect, Weather.SUNNY, 100)
+    scenario = get_current_scenario()
+    weather = scenario["weather"]["type"]
+    intensity = scenario["weather"]["intensity"]
+    ws = WeatherScenario(_connect, weather, intensity)
     ws.main()
     rospy.spin()
