@@ -4,6 +4,8 @@ import rospy
 import random
 from traffic_scenarios.utils.connect import Connect
 from carla import Location, Transform, Rotation
+from traffic_scenarios.models.scenario import Scenario, get_current_scenario
+
 
 PEDESTRIAN_START = Transform(Location(x=92.980034, y=-69.512383, z=8.472011),
                              Rotation(pitch=-1.411739, yaw=-85.510864, roll=0.000913))
@@ -45,6 +47,8 @@ class CrosserScenario:
 if __name__ == '__main__':
     rospy.init_node("pedestrian_node", anonymous=True)
     _connect = Connect()
-    ws = CrosserScenario(_connect, 0)
+    scenario = get_current_scenario()
+    frequency = scenario["people"]
+    ws = CrosserScenario(_connect, frequency)
     ws.main()
     rospy.spin()
