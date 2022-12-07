@@ -46,35 +46,29 @@ class MovingCars:
         car = self.spawn_actor(RIGHT_START, bp)
         self._cars.append(car)
 
-    def main(self):
-        if self._frequency == 0:
-            return
+    def spawn_left_and_right_car(self):
         car = self.spawn_actor(RIGHT_START, random.choice(self.vehicle_choices))
         car2 = self.spawn_actor(LEFT_START, random.choice(self.vehicle_choices))
-        time = rospy.Time.now()
         rospy.sleep(0.5)
         run(car)
         rospy.sleep(0.5)
         run(car2)
+
+    def main(self):
+        if self._frequency == 0:
+            return
+        self.spawn_left_and_right_car()
+        time = rospy.Time.now()
+
         while not rospy.is_shutdown():
             if time + rospy.Duration(self._frequency) < rospy.Time.now():
+                self.spawn_left_and_right_car()
                 time = rospy.Time.now()
-                car = self.spawn_actor(RIGHT_START, random.choice(self.vehicle_choices))
-                rospy.sleep(0.5)  # let actor spawn
-                run(car)
-                car2 = self.spawn_actor(LEFT_START, random.choice(self.vehicle_choices))
-                rospy.sleep(0.5)  # let actor spawn
-                run(car2)
 
-
-# TODO: objective function
-# TODO: Define safety targets
-# TODO: Measure where on road car must be, get points every second of a perfect drive
-# TODO: how far away is the car from other cars
 
 if __name__ == '__main__':
     rospy.init_node("car_spawning_node", anonymous=True)
     _connect = Connect()
-    mc = MovingCars(_connect, 0)
+    mc = MovingCars(_connect, 100)
     mc.main()
     rospy.spin()
