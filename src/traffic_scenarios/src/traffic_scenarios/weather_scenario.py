@@ -29,7 +29,7 @@ class WeatherScenario:
 
     def get_sun_parameters(self):
         w = WeatherParameters()
-        w.sun_altitude_angle = 17.0
+        w.sun_altitude_angle = 17.0 + ((100.0-self._intensity)/100.0)*(90-17)
         w.sun_azimuth_angle = 5.0
         return w
 
