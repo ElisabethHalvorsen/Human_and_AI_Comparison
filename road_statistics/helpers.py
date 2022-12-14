@@ -40,7 +40,7 @@ def merge_two_and_more_vehicle_crashes(df: DataFrame) -> DataFrame:
 
 
 def print_to_html(df: DataFrame, file_name: str):
-    df.to_html(f'outputs/{file_name}.html')
+    df.to_excel(f'outputs/{file_name}.xlsx')
 
 
 if __name__ == '__main__':
