@@ -1,0 +1,4 @@
+cars:3
+people:99
+weather:98
+weather_type:2
