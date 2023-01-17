@@ -361,5 +361,6 @@ CATKIN_IGNORE
 .idea/
 
 /src/scenario_generation/src/scenario_generation/scenarios/*
+src/scenario_generation/src/scenario_generation/scenario.txt
 
 # End of https://www.toptal.com/developers/gitignore/api/python,pycharm,visualstudiocode,jupyternotebooks,ros
