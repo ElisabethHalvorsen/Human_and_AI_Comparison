@@ -55,30 +55,47 @@ class InitialiseScenario:
     def __init__(self):
         self._weather_type = Weather(random.choice([w.value for w in Weather]))
         self._file = f'{SCENARIOS_PATH}/scenarios_{self._weather_type}.csv'
-        self._weather_intensity = None
-        self._car_intensity = None
-        self._pedestrian_intensity = None
+        self._weather_intensity = 0
+        self._car_intensity = 0
+        self._pedestrian_intensity = 0
 
-    def main(self):
-        df = pd.read_csv(self._file)
-        for row in df.iterrows():
-            if row[1]['tests'] == 0:
-                self._weather_intensity = row[1]['weather']
-                self._car_intensity = row[1]['cars']
-                self._pedestrian_intensity = row[1]['people']
-                df.iloc[row[0]]['tests'] += 1
-                df.to_csv(self._file, index=False)
-                break
+    def _update_txt_file(self):
         with open(SCENARIOS_TXT_PATH, 'w') as f:
             f.write('cars:%i\n' % self._car_intensity)
             f.write('people:%i\n' % self._pedestrian_intensity)
             f.write('weather:%i\n' % self._weather_intensity)
             f.write('weather_type:%s\n' % self._weather_type.value)
 
+    def _update_csv_file(self, df: pd.DataFrame, row: int):
+        self._weather_intensity = df.iloc[row]['weather']
+        self._car_intensity = df.iloc[row]['cars']
+        self._pedestrian_intensity = df.iloc[row]['people']
+        df.iloc[row]['tests'] += 1
+        df.to_csv(self._file, index=False)
+
+    def main(self):
+        df = pd.read_csv(self._file)
+        smallest_row = 0
+        smallest_val = 1000000
+        is_updated = False
+        for row in df.iterrows():
+            if row[1]['tests'] == 0:
+                is_updated = True
+                self._update_csv_file(df, row[0])
+                break
+            if row[1]['tests'] < smallest_val:
+                smallest_row = row[0]
+                smallest_val = row[1]['tests']
+
+        if not is_updated:
+            self._update_csv_file(df, smallest_row)
+
+        self._update_txt_file()
+
 
 if __name__ == "__main__":
     # os.system('ls -l')  # run command in terminal
-    # scenario_generation = ScenariosGeneration(100)
+    # scenario_generation = ScenariosGeneration(2)
     # scenario_generation.main()
     i = InitialiseScenario()
     i.main()

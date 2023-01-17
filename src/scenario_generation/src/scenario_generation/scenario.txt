@@ -1,4 +1,4 @@
 cars:3
-people:99
-weather:98
-weather_type:2
+people:98
+weather:99
+weather_type:1
