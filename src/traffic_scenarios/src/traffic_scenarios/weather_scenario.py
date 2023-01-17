@@ -4,7 +4,7 @@ import rospy
 from carla import WeatherParameters
 from traffic_scenarios.utils.connect import Connect
 from traffic_scenarios.models.weather import Weather
-from traffic_scenarios.models.scenario import Scenario, get_current_scenario
+from traffic_scenarios.models.scenario import get_current_scenario
 
 class WeatherScenario:
     def __init__(self, connect: Connect, weather: Weather, intensity: int):

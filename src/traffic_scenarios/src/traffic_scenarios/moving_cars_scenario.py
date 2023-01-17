@@ -3,7 +3,7 @@ import rospy
 from carla import Location, Transform, Rotation
 import random
 from traffic_scenarios.utils.connect import Connect
-from traffic_scenarios.models.scenario import Scenario, get_current_scenario
+from traffic_scenarios.models.scenario import get_current_scenario
 
 TOLERANCE = 10
 
