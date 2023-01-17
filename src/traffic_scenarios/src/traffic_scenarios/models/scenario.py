@@ -1,34 +1,23 @@
-import enum
+#!/usr/bin/env python3
+
 from traffic_scenarios.models.weather import Weather
+import rospkg
+import os
 
-
-class Scenario(enum.Enum):
-    S1 = 1
-    S2 = 2
-    S3 = 3
-    S4 = 4
-    S5 = 5
-    S6 = 6
-    S7 = 7
-    S8 = 8
-    S9 = 9
-
-    def get_scenario_params(self):
-        return SCENARIOS.get(self)
-
-
-SCENARIOS = {
-    Scenario.S1: {'cars': 100, 'people': 100, 'weather': {'type': Weather.RAINY, 'intensity': 100}},
-    Scenario.S2: {'cars': 100, 'people': 100, 'weather': {'type': Weather.FOGGY, 'intensity': 100}},
-    Scenario.S3: {'cars': 100, 'people': 100, 'weather': {'type': Weather.SUNNY, 'intensity': 100}},
-    Scenario.S4: {'cars': 100, 'people': 0, 'weather': {'type': Weather.RAINY, 'intensity': 0}},  # multiple cars
-    Scenario.S5: {'cars': 0, 'people': 100, 'weather': {'type': Weather.RAINY, 'intensity': 0}},  # multiple people
-    Scenario.S6: {'cars': 0, 'people': 0, 'weather': {'type': Weather.FOGGY, 'intensity': 100}},  # foggy
-    Scenario.S7: {'cars': 0, 'people': 0, 'weather': {'type': Weather.SUNNY, 'intensity': 100}},  # sunny
-    Scenario.S8: {'cars': 0, 'people': 0, 'weather': {'type': Weather.RAINY, 'intensity': 100}},  # rainy
-    Scenario.S9: {'cars': 0, 'people': 0, 'weather': {'type': Weather.RAINY, 'intensity': 0}},  # nothing
-}
+SCENARIO_GEN_PATH = os.path.join(rospkg.RosPack().get_path('scenario_generation'), 'src', 'scenario_generation',
+                                 'scenario.txt')
 
 
 def get_current_scenario():
-    return SCENARIOS[Scenario.S1]
+    with open(SCENARIO_GEN_PATH, 'r') as in_f:
+        lines = in_f.readlines()
+        for l in lines:
+            if 'cars' in l:
+                cars = float(l.strip().split(':')[1])
+            if 'people' in l:
+                people = float(l.strip().split(':')[1])
+            if 'weather' in l:
+                weather = float(l.strip().split(':')[1])
+            if 'weather_type' in l:
+                weather_type = float(l.strip().split(':')[1])
+    return {'cars': cars, 'people': people, 'weather': {'type': Weather(weather_type), 'intensity': weather}}
