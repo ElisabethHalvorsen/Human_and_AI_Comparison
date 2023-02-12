@@ -34,7 +34,8 @@ class MovingCars:
             self._frequency = 0
         else:
             self._frequency = 10 * (1 + (1 - frequency / 100))
-        self.vehicle_choices = self._connect.get_blueprint_lib().filter('vehicle.*')
+        vehicles = self._connect.get_blueprint_lib().filter('vehicle.*')
+        self.vehicle_choices = vehicles[1:]
         self.current = 0
         self._cars = []
 
