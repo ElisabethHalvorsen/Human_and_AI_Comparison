@@ -2,4 +2,5 @@
     <node name="car_spawning" pkg="traffic_scenarios" type="moving_cars_scenario.py" output="screen" respawn="true"/>
     <node name="weather_generator" pkg="traffic_scenarios" type="weather_scenario.py" output="screen"/>
     <node name="pedestrian" pkg="traffic_scenarios" type="cross_scenario.py" output="screen" required="true"/>
+    <node name="setup_world" pkg="traffic_scenarios" type="setup_world.py" output="screen"/>
 </launch>
