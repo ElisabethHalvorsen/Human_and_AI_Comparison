@@ -16,10 +16,7 @@ class CrosserScenario:
         if not (0 <= frequency <= 100):
             raise ValueError("Frequency must be between 0 and 100")
         rospy.sleep(5)  # wait for carla to start
-        if frequency == 0:
-            self._frequency = 0
-        else:
-            self._frequency = 50 * (1 + (1 - frequency / 100))
+        self._frequency = (-0.53 * frequency) + 60
         self._connect = connect
         self._world = connect.get_world()
         self._walker_bp = self._connect.get_blueprint_lib().filter('walker.pedestrian.*')

@@ -31,10 +31,7 @@ class MovingCars:
             raise ValueError("Frequency must be between 0 and 100")
         rospy.sleep(5)  # wait for carla to start
         self._connect = connect
-        if frequency == 0:
-            self._frequency = 0
-        else:
-            self._frequency = 7 * (1 + (1 - frequency / 100))
+        self._frequency = (-0.53 * frequency) + 60
         vehicles = self._connect.get_blueprint_lib().filter('vehicle.*')
         tmp_vehicle_choices = [v if idx != 0 else None for idx, v in enumerate(vehicles)]
         self.vehicle_choices = tmp_vehicle_choices[1:]
