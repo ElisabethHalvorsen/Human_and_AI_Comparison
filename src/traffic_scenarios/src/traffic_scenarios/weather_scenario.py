@@ -10,6 +10,8 @@ class WeatherScenario:
     def __init__(self, connect: Connect, weather: Weather, intensity: int):
         if not (0 <= intensity <= 100):
             raise ValueError("Frequency must be between 0 and 100")
+
+        rospy.sleep(5)  # wait for carla to start
         self._weather = weather
         self._connect = connect
         self._intensity = intensity

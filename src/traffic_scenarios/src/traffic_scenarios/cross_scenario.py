@@ -15,6 +15,7 @@ class CrosserScenario:
     def __init__(self, connect: Connect, frequency: int):
         if not (0 <= frequency <= 100):
             raise ValueError("Frequency must be between 0 and 100")
+        rospy.sleep(5)  # wait for carla to start
         if frequency == 0:
             self._frequency = 0
         else:
