@@ -29,13 +29,15 @@ class MovingCars:
     def __init__(self, connect: Connect, frequency: int):
         if not (0 <= frequency <= 100):
             raise ValueError("Frequency must be between 0 and 100")
+        rospy.sleep(5)  # wait for carla to start
         self._connect = connect
         if frequency == 0:
             self._frequency = 0
         else:
-            self._frequency = 10 * (1 + (1 - frequency / 100))
+            self._frequency = 7 * (1 + (1 - frequency / 100))
         vehicles = self._connect.get_blueprint_lib().filter('vehicle.*')
-        self.vehicle_choices = vehicles[1:]
+        tmp_vehicle_choices = [v if idx != 0 else None for idx, v in enumerate(vehicles)]
+        self.vehicle_choices = tmp_vehicle_choices[1:]
         self.current = 0
         self._cars = []
 
