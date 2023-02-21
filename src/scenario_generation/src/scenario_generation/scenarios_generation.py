@@ -15,10 +15,10 @@ SCENARIOS_TXT_PATH = f'{SCENARIO_GEN_PATH}/scenario.txt'
 
 # Parameters
 WEIGHTS = np.array([1, 1, 1])
-N_GENERATIONS = 10
+N_GENERATIONS = 20
 N_GENES = WEIGHTS.shape[0]
-INIT_RANGE_LOW = -3
-INIT_RANGE_HIGH = 12
+INIT_RANGE_LOW = -5
+INIT_RANGE_HIGH = 55
 
 
 class ScenariosGeneration:
@@ -35,11 +35,11 @@ class ScenariosGeneration:
 
     @staticmethod
     def _fitness_func(solution, solution_idx) -> int:
-        total = np.sum(solution) * WEIGHTS
-        if np.logical_and(total >= 15, total <= 25).all():
-            fitness = 1
+        total = np.sum(np.multiply(solution, WEIGHTS))
+        if 150 <= total <= 150:
+            fitness = 5
         else:
-            fitness = 0
+            fitness = -5
         return fitness
 
     @staticmethod
@@ -67,26 +67,31 @@ class ScenariosGeneration:
         if instances < 10:
             raise ValueError("n_instances must be greater than 60")
         instances = ceil(instances / 10)
-        population = None
-        for i in range(10):
-            if isinstance(population, type(None)):
-                population = self._generate_one_population(instances)
-            else:
-                population = np.concatenate((population, self._generate_one_population(instances)), axis=0)
-        population = self.reformat_population(population)
-        unique_population = np.unique(population, axis=0)
-        if len(unique_population) > n_instances:
-            n_remove = len(unique_population) - n_instances
-            return unique_population[:-n_remove]
-        else:
-            return unique_population
+        population = np.array([])
+        while population.shape[0] < n_instances:
+            for i in range(10):
+                if population.shape[0] == 0:
+                    population = self._generate_one_population(instances)
+                else:
+                    population = np.concatenate((population, self._generate_one_population(instances)), axis=0)
+            population = self.reformat_population(population)
+            population = np.unique(population, axis=0)
+            # filter out invalid rows
+            row_sums = np.sum(population, axis=1)
+            mask = (row_sums >= 150) & (row_sums <= 250)
+            # use the boolean mask to select the rows that meet the criteria
+            population = population[mask]
+            if len(population) > n_instances:
+                n_remove = len(population) - n_instances
+                return population[:-n_remove]
+        return population
 
     def main(self):
         population = self.generate_random_population(self.permutations)
+        print(population.shape)
         tests = np.zeros((population.shape[0], 1))
         population = np.concatenate((population, tests), axis=1)
-        df = pd.DataFrame(population, columns=["cars", "pedestrians", "weather", "tests"])
-        df.to_csv("dbscan_results.csv", index=False)
+        df = pd.DataFrame(population, columns=["cars", "people", "weather", "tests"])
         for on in self.out_names:
             if os.path.exists(on):
                 df.to_csv(on, index=False, mode='a', header=False)
@@ -137,7 +142,7 @@ class InitialiseScenario:
 
 
 if __name__ == "__main__":
-    scenario_generation = ScenariosGeneration(100)
+    scenario_generation = ScenariosGeneration(1000)
     scenario_generation.main()
     # i = InitialiseScenario()
     # i.main()

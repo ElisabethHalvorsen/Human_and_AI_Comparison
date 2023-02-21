@@ -13,7 +13,7 @@ SCENARIO_PATH = os.path.join(rospkg.RosPack().get_path('scenario_generation'), '
                              'scenarios', f'scenarios_{Weather(0)}.csv')
 
 population = pd.read_csv(SCENARIO_PATH).to_numpy()
-dbscan = DBSCAN(eps=10, min_samples=2)
+dbscan = DBSCAN(eps=5, min_samples=2)
 dbscan.fit_predict(population)
 pred = dbscan.fit_predict(population)
 cluster_assignment = dbscan.labels_
@@ -29,11 +29,9 @@ labels = dbscan.labels_
 unique_labels = np.unique(labels)
 # unique_labels = unique_labels[unique_labels != -1]  # remove noise points, as we don't want to count them
 cluster_sizes = []
-print(unique_labels)
 for i in unique_labels:
     if np.equal(-1, i):  # treat noise points as an individual cluster
         n_noise_points = np.sum(labels == i)
-        print("noise poitns:", n_noise_points)
         for _ in range(n_noise_points):
             cluster_sizes.append(1)
     else:
@@ -41,7 +39,7 @@ for i in unique_labels:
 
 # Calculate a diversity metric
 diversity = entropy(cluster_sizes)  # shannon entropy
-print("Number of clusters:", len(unique_labels))
+# print("Number of clusters:", len(unique_labels))
 print("Cluster sizes:", cluster_sizes)
 print("Diversity:", diversity)
 
