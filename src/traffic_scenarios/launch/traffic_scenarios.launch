@@ -3,4 +3,7 @@
     <node name="weather_generator" pkg="traffic_scenarios" type="weather_scenario.py" output="screen"/>
     <node name="pedestrian" pkg="traffic_scenarios" type="cross_scenario.py" output="screen" required="true"/>
     <node name="setup_world" pkg="traffic_scenarios" type="setup_world.py" output="screen"/>
+    <node name="data_collection" pkg="safety_analysis" type="safety_measure.py"/>
+    <node name="auto_driver" pkg="vehicle_control" type="auto_control.py" required="true"/>
+
 </launch>
