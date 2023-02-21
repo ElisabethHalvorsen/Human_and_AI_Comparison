@@ -2,19 +2,22 @@
 import rospy
 from traffic_scenarios.utils.connect import Connect
 
-from carla import ActorBlueprint, Actor, Waypoint
+from carla import ActorBlueprint, Actor
 import pandas as pd
 from math import sqrt
 from traffic_scenarios.create_optimal_path import WaypointPath, START, LEFT_END, RIGHT_END
 import sys
-import numpy as np
-import transformations as tr
 from datetime import datetime as dt
 import os
 import rospkg
+from traffic_scenarios.models.scenario import get_current_scenario
+
 SCENARIO_GEN_PATH = os.path.join(rospkg.RosPack().get_path('safety_analysis'), 'src', 'safety_analysis', 'data')
+
+
 class SafetyMeasure:
     def __init__(self):
+        rospy.sleep(5)  # wait for carla to start
         self._connect = Connect()
         self._world = self._connect.get_world()
         vehicles = self._connect.get_blueprint_lib().filter('vehicle.*')
@@ -22,23 +25,18 @@ class SafetyMeasure:
         path = WaypointPath(self._connect)
         self._pp = path.get_waypoint_path(START, LEFT_END)[2:85]
 
+    @staticmethod
+    def get_scenario_name():
+        scenario = get_current_scenario()
+        name = ''
+        for s in scenario:
+            name += f'{s}_{scenario[s]}_'
+        return name[:-1]
     def get_player_id(self, player_bp: ActorBlueprint) -> Actor:
         actors = self._world.get_actors()
         for a in actors:
             if a.type_id == player_bp.id:
                 return a
-
-    @staticmethod  # DOESNT WORK
-    def get_geodesic_distance(rot1, rot2):
-        quat1 = tr.quaternion_from_euler(np.radians(rot1.roll), np.radians(rot1.pitch), np.radians(rot1.yaw), 'sxyz')
-        quat2 = tr.quaternion_from_euler(np.radians(rot2.roll), np.radians(rot2.pitch), np.radians(rot2.yaw), 'sxyz')
-        print("Input angles (radians):", np.radians(rot1.roll), np.radians(rot1.pitch), np.radians(rot1.yaw))
-        print("Resulting quaternion:", quat1)
-        R1 = tr.quaternion_matrix(quat1)[:3, :3]
-        R2 = tr.quaternion_matrix(quat2)[:3, :3]
-        R = np.dot(R2, np.linalg.inv(R1))
-        angle, axis, _ = tr.rotation_from_matrix(R)
-        return np.degrees(angle)
 
     @staticmethod
     def get_euclidean_distance(p1, p2):
@@ -48,7 +46,6 @@ class SafetyMeasure:
         # w = Waypoint()
         min_dist = sys.maxsize
         id = 0
-
         try:
             player_location = self.player.get_location()
             player_rot = self.player.get_transform().rotation
@@ -66,14 +63,13 @@ class SafetyMeasure:
     def main(self):
         while not rospy.is_shutdown():
             pp_trans, dist, player_rot = self.get_closest_transform()
-            angle = 1#self.get_geodesic_distance(pp_trans.rotation, player_rot)
-            df_outcome = pd.DataFrame({'Time': [dt.now()], 'Distance': [dist], 'Angle': [angle]})
-            out_name = f'{SCENARIO_GEN_PATH}/safety_analysis.csv'
+            df_outcome = pd.DataFrame({'Time': [dt.now()], 'Distance': [dist]})
+            name_id = self.get_scenario_name()
+            out_name = f'{SCENARIO_GEN_PATH}/{name_id}.csv'
             if os.path.exists(out_name):
                 df_outcome.to_csv(out_name, index=False, mode='a', header=False)
             else:
                 df_outcome.to_csv(out_name, index=False, mode='w')
-
             rospy.sleep(0.5)
         # print(self.player)
 
