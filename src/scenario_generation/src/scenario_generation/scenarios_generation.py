@@ -20,7 +20,8 @@ N_GENES = WEIGHTS.shape[0]
 INIT_RANGE_LOW = -5
 INIT_RANGE_HIGH = 55
 
-
+MAX = 300
+MIN = 200
 class ScenariosGeneration:
     def __init__(self, permutations: int):
         if not (100 <= permutations <= 1000):
@@ -36,7 +37,7 @@ class ScenariosGeneration:
     @staticmethod
     def _fitness_func(solution, solution_idx) -> int:
         total = np.sum(np.multiply(solution, WEIGHTS))
-        if 150 <= total <= 150:
+        if MIN <= total <= MAX:
             fitness = 5
         else:
             fitness = -5
@@ -78,7 +79,7 @@ class ScenariosGeneration:
             population = np.unique(population, axis=0)
             # filter out invalid rows
             row_sums = np.sum(population, axis=1)
-            mask = (row_sums >= 150) & (row_sums <= 250)
+            mask = (row_sums >= MIN) & (row_sums <= MAX)
             # use the boolean mask to select the rows that meet the criteria
             population = population[mask]
             if len(population) > n_instances:
