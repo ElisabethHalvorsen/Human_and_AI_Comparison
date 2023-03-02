@@ -30,8 +30,13 @@ class SafetyMeasure:
         scenario = get_current_scenario()
         name = ''
         for s in scenario:
-            name += f'{s}_{scenario[s]}_'
+            if isinstance(scenario[s], dict):
+                for s2 in scenario[s]:
+                    name += f'{s2}_{scenario[s][s2]}_'
+            else:
+                name += f'{s}_{str(scenario[s])}_'
         return name[:-1]
+
     def get_player_id(self, player_bp: ActorBlueprint) -> Actor:
         actors = self._world.get_actors()
         for a in actors:
@@ -61,11 +66,11 @@ class SafetyMeasure:
         return self._pp[id][0].transform, min_dist, player_rot
 
     def main(self):
+        name_id = self.get_scenario_name()
+        out_name = f'{SCENARIO_GEN_PATH}/{name_id}.csv'
         while not rospy.is_shutdown():
             pp_trans, dist, player_rot = self.get_closest_transform()
             df_outcome = pd.DataFrame({'Time': [dt.now()], 'Distance': [dist]})
-            name_id = self.get_scenario_name()
-            out_name = f'{SCENARIO_GEN_PATH}/{name_id}.csv'
             if os.path.exists(out_name):
                 df_outcome.to_csv(out_name, index=False, mode='a', header=False)
             else:
