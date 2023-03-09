@@ -3,12 +3,10 @@
 import matplotlib.pyplot as plt
 
 
-def plot_3d(population, assignments=None, title=None):
+def plot_3d(population, labels, title=None):
     ax = plt.axes(projection='3d')
-    if assignments is None:
-        ax.plot3D(population[:, 0], population[:, 1], population[:, 2], 'o')
-    else:
-        ax.scatter(population[:, 0], population[:, 1], population[:, 2], c=assignments, s=50)
+    numpy_population = population.to_numpy()
+    ax.scatter(numpy_population[:, 0], numpy_population[:, 1], numpy_population[:, 2], c=labels, s=50)
     if title:
         ax.set_title(title)
     plt.show()
