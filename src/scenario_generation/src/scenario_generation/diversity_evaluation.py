@@ -12,11 +12,11 @@ import numpy as np
 SCENARIO_PATH = os.path.join(rospkg.RosPack().get_path('scenario_generation'), 'src', 'scenario_generation',
                              'scenarios', f'scenarios_{Weather(0)}.csv')
 
-population = pd.read_csv(SCENARIO_PATH).to_numpy()
-dbscan = DBSCAN(eps=5, min_samples=2)
+population = pd.read_csv(SCENARIO_PATH)
+print("Population shape:", int(population.shape[0]/100))
+dbscan = DBSCAN(eps=5, min_samples=int(population.shape[0]/100))
 dbscan.fit_predict(population)
 pred = dbscan.fit_predict(population)
-cluster_assignment = dbscan.labels_
 labels = dbscan.labels_
 
 n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
@@ -44,7 +44,7 @@ print("Cluster sizes:", cluster_sizes)
 print("Diversity:", diversity)
 
 # plot
-plot_3d(population, cluster_assignment, title='DBSCAN')
+plot_3d(population, labels, title='DBSCAN')
 
 # Therefore, a low entropy value suggests that the data is concentrated in a few clusters, while a high entropy value
 # suggests that the data is more evenly spread across the clusters. In the context of measuring diversity,
