@@ -1,4 +1,0 @@
-cars:0
-people:0
-weather:39
-weather_type:2
