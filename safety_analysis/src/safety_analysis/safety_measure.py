@@ -105,6 +105,7 @@ class SafetyMeasure:
     def main(self):
         name_id = self.get_scenario_name()
         out_name = f'{SCENARIO_GEN_PATH}/{name_id}.csv'
+        player_loc = self.player.get_transform().location
         while not rospy.is_shutdown():
             pp_trans, dist, player_rot = self.get_closest_transform()
             if self.rss_res:
@@ -116,7 +117,11 @@ class SafetyMeasure:
                                                'Distance Actor':[i.get_distance()],
                                                'Stopping Distance':i.get_min_stopping_dist(),
                                                'Crossing Border': i.get_is_crossing_border(),
-                                               'Dangerous': i.get_is_dangerous()})
+                                               'Dangerous': i.get_is_dangerous(),
+                                               'Player Loc X': player_loc.x,
+                                               'Player Loc Y': player_loc.y,
+                                               'Player Loc Z': player_loc.z,
+                                               'Speed player': self.player.get_velocity()})
                     if os.path.exists(out_name):
                         df_outcome.to_csv(out_name, index=False, mode='a', header=False)
                     else:
@@ -129,7 +134,11 @@ class SafetyMeasure:
                                            'Distance Actor': [None],
                                            'Stopping Distance': None,
                                            'Crossing Border': None,
-                                           'Dangerous': None})
+                                           'Dangerous': None,
+                                           'Player Loc X': player_loc.x,
+                                           'Player Loc Y': player_loc.y,
+                                           'Player Loc Z': player_loc.z,
+                                           'Speed player': self.player.get_velocity()})
                 if os.path.exists(out_name):
                     df_outcome.to_csv(out_name, index=False, mode='a', header=False)
                 else:
