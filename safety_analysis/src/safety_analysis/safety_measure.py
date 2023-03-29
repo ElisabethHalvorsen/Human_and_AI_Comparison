@@ -26,7 +26,7 @@ class SafetyMeasure:
         self._bp = self._connect.get_blueprint_lib()
         vehicles = self._connect.get_blueprint_lib().filter('vehicle.*')
         self.player = self.get_player_id(vehicles[0])
-        print("player:", self.player, '+'*50)
+        # print("player:", self.player, '+'*50)
         path = WaypointPath(self._connect)
         self._pp = path.get_waypoint_path(START, LEFT_END)[2:85]
         collision_bp = self._bp.find('sensor.other.collision')
@@ -79,6 +79,7 @@ class SafetyMeasure:
                 return a
         else:
             print("no player")
+            return None
 
     @staticmethod
     def get_euclidean_distance(p1, p2):
