@@ -14,10 +14,13 @@ VIEWING_POINT = Transform(
 if __name__ == '__main__':
     connect = Connect()
     client = connect.get_client()
-    client.load_world('Town03')
     world = connect.get_world()
+    if 'Town03' in world.get_map().name:
+        print("already in Town03")
+    else:
+        print("going to Town03")
+        client.load_world('Town03')
     spectator = world.get_spectator()
-    # print(spectator.get_transform())
     spectator.set_transform(VIEWING_POINT)
     i = InitialiseScenario()
     i.main()
