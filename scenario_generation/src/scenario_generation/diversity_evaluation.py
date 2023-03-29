@@ -43,7 +43,7 @@ for i in unique_labels:
 
 # Calculate a diversity metric
 diversity = entropy(cluster_sizes)  # shannon entropy
-# print("Number of clusters:", len(unique_labels))
+print("Number of clusters:", len(unique_labels))
 print("Cluster sizes:", cluster_sizes)
 print("Diversity:", diversity)
 

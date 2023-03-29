@@ -19,6 +19,7 @@ def score_file(file: str):
         score = -1
         print("Collision detected")
     else:
+        print("Total behaviours: ", rows)
         print("Dangerous behaviours: ", df['Dangerous'].sum())
         score = (rows - df['Dangerous'].sum()) / rows
     return score
