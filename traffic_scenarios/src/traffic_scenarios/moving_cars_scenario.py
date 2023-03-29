@@ -37,6 +37,9 @@ class MovingCars:
         rospy.sleep(5)  # wait for carla to start
         self._connect = connect
         self._client = self._connect.get_client()
+        self._world = self._client.get_world()
+        vehicles = self._connect.get_blueprint_lib().filter('vehicle.*')
+        self.player = self.get_player_id(vehicles[0])
         self._frequency = (-0.53 * frequency) + 60
         vehicles = self._connect.get_blueprint_lib().filter('vehicle.*')
         tmp_vehicle_choices = [v if idx != 0 else None for idx, v in enumerate(vehicles)]
@@ -50,6 +53,16 @@ class MovingCars:
         self._tm.vehicle_percentage_speed_difference(car, -30)
         self._tm.ignore_vehicles_percentage(car, 50)
         self._tm.keep_right_rule_percentage(car, 0)
+        self._tm.collision_detection(car, self.player, False)
+
+    def get_player_id(self, player_bp):
+        actors = self._world.get_actors()
+        for a in actors:
+            if a.type_id == player_bp.id:
+                return a
+        else:
+            print("no player")
+            return None
 
     def run(self, cars: list, tm_port):
         for car in cars:

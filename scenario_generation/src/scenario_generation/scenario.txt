@@ -1,4 +1,4 @@
-cars:8
-people:100
+cars:100
+people:22
 weather:100
-weather_type:0
+weather_type:1
