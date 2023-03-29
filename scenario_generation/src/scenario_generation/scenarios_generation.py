@@ -24,8 +24,8 @@ MAX = 300
 MIN = 200
 class ScenariosGeneration:
     def __init__(self, permutations: int):
-        if not (100 <= permutations <= 1000):
-            raise ValueError('Permutations must be between 10 and 20000 ')
+        if permutations < 10 or permutations > 1000:
+            raise ValueError('Permutations must be between 10 and 1000 ')
         self.permutations = permutations
 
         # remove the previously generated scenarios
@@ -64,17 +64,12 @@ class ScenariosGeneration:
         return (ga_instance.population * 10).astype(int)
 
     def generate_random_population(self, instances: int) -> np.ndarray:
-        n_instances = instances
-        if instances < 10:
-            raise ValueError("n_instances must be greater than 60")
-        instances = ceil(instances / 10)
         population = np.array([])
-        while population.shape[0] < n_instances:
-            for i in range(10):
-                if population.shape[0] == 0:
-                    population = self._generate_one_population(instances)
-                else:
-                    population = np.concatenate((population, self._generate_one_population(instances)), axis=0)
+        while population.shape[0] < instances:
+            if population.shape[0] == 0:
+                population = self._generate_one_population(instances)
+            else:
+                population = np.concatenate((population, self._generate_one_population(instances)), axis=0)
             population = self.reformat_population(population)
             population = np.unique(population, axis=0)
             # filter out invalid rows
@@ -82,8 +77,8 @@ class ScenariosGeneration:
             mask = (row_sums >= MIN) & (row_sums <= MAX)
             # use the boolean mask to select the rows that meet the criteria
             population = population[mask]
-            if len(population) > n_instances:
-                n_remove = len(population) - n_instances
+            if len(population) > instances:
+                n_remove = len(population) - instances
                 return population[:-n_remove]
         return population
 
@@ -143,7 +138,7 @@ class InitialiseScenario:
 
 
 if __name__ == "__main__":
-    scenario_generation = ScenariosGeneration(100)
+    scenario_generation = ScenariosGeneration(10)
     scenario_generation.main()
     # i = InitialiseScenario()
     # i.main()
