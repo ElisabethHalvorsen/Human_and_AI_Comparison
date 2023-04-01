@@ -20,7 +20,7 @@ SCENARIO_GEN_PATH = os.path.join(rospkg.RosPack().get_path('safety_analysis'), '
 
 class SafetyMeasure:
     def __init__(self):
-        rospy.sleep(7)  # wait for carla to start
+        rospy.sleep(5)  # wait for carla to start
         self._connect = Connect()
         self._world = self._connect.get_world()
         self._bp = self._connect.get_blueprint_lib()
@@ -67,7 +67,9 @@ class SafetyMeasure:
                     name += f'{s2}_{scenario[s][s2]}_'
             else:
                 name += f'{s}_{str(scenario[s])}_'
-        return name[:-1]
+        name = name[:-1]
+        name += f'_daytime_{dt.now().strftime("%d-%m-%Y_%H:%M:%S")}'
+        return name
 
     def collision_callback(self, event, data_dict):
         self.collided = True
@@ -147,14 +149,12 @@ class SafetyMeasure:
             if self.collided:
                 rospy.logwarn("The car collided")
                 rospy.logwarn("Stopping the run")
-                # self._collision_sensor.stop()
-                break
+                return
             loc = self.player.get_location()
             if is_at_end(loc, END, tolerance=TOLERANCE):
                 rospy.logwarn("Player is at end")
                 return
             rospy.sleep(0.5)
-        # print(self.player)
 
 
 if __name__ == '__main__':
