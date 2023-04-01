@@ -72,7 +72,7 @@ class AutoDrive:
         set_tire_friction(self.player, self._world)
 
     def main(self):
-        rospy.sleep(13)  # wait for carla to start
+        rospy.sleep(8)  # wait for carla to start
         self.player.set_autopilot(True)
         time = rospy.Time.now()
         while not rospy.is_shutdown():
