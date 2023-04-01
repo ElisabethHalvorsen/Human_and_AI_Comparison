@@ -140,5 +140,3 @@ class InitialiseScenario:
 if __name__ == "__main__":
     scenario_generation = ScenariosGeneration(10)
     scenario_generation.main()
-    # i = InitialiseScenario()
-    # i.main()
