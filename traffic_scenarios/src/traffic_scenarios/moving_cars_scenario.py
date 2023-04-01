@@ -31,7 +31,7 @@ class MovingCars:
     """Class that when called spawns cars on the road with a frequency between 0 and 100 where 100 is the max
     frequency """
 
-    def __init__(self, connect: Connect, frequency: int):
+    def __init__(self, connect: Connect, frequency: int, weather_intensity: int):
         if not (0 <= frequency <= 100):
             raise ValueError("Frequency must be between 0 and 100")
         rospy.sleep(5)  # wait for carla to start
@@ -46,13 +46,14 @@ class MovingCars:
         self.vehicle_choices = tmp_vehicle_choices[1:]
         self.current = 0
         self._cars = []
-        self._tm = self._client.get_trafficmanager()
+        self._tm = self._client.get_trafficmanager(port=8000)
+        self.weather_intensity = weather_intensity
 
     def set_dangerous_behaviour(self, car):
-        self._tm.distance_to_leading_vehicle(car, 0)
+        # self._tm.distance_to_leading_vehicle(car, 0)
         self._tm.vehicle_percentage_speed_difference(car, -30)
-        self._tm.ignore_vehicles_percentage(car, 50)
-        self._tm.keep_right_rule_percentage(car, 0)
+        self._tm.ignore_vehicles_percentage(car, self.weather_intensity)
+        self._tm.keep_right_rule_percentage(car, self.weather_intensity)
         self._tm.collision_detection(car, self.player, False)
 
     def get_player_id(self, player_bp):
@@ -68,9 +69,9 @@ class MovingCars:
         for car in cars:
             if car is not None:
                 car.set_autopilot(True, tm_port)
-                rospy.sleep(0.5)
+                rospy.sleep(0.2)
                 self.set_dangerous_behaviour(car)
-                print("setting behaviour")
+                # print("setting behaviour")
 
     def spawn_actor(self, transform: Transform, bp):
         return self._connect.get_world().try_spawn_actor(bp, transform)
@@ -117,6 +118,7 @@ if __name__ == '__main__':
     _connect = Connect()
     scenario = get_current_scenario()
     frequency = scenario["cars"]
-    mc = MovingCars(_connect, frequency)
+    weather_intensity = scenario["weather"]["intensity"]
+    mc = MovingCars(_connect, frequency, weather_intensity)
     mc.main()
     rospy.spin()
