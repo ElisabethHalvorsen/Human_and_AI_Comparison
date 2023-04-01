@@ -56,4 +56,3 @@ if __name__ == '__main__':
     intensity = scenario["weather"]["intensity"]
     ws = WeatherScenario(_connect, weather, intensity)
     ws.main()
-    rospy.spin()
