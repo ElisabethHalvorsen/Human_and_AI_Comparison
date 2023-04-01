@@ -42,10 +42,13 @@ for i in unique_labels:
         cluster_sizes.append(np.sum(labels == i))
 
 # Calculate a diversity metric
+max_clusters = population.shape[0]
+max_diversity = entropy([1] * max_clusters)  # shannon entropy
 diversity = entropy(cluster_sizes)  # shannon entropy
 print("Number of clusters:", len(unique_labels))
 print("Cluster sizes:", cluster_sizes)
 print("Diversity:", diversity)
+print("Max diversity:", max_diversity)
 
 # plot
 plot_3d(population, labels, title='DBSCAN')
