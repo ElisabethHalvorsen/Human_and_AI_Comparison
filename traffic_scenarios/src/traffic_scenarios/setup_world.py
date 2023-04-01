@@ -15,10 +15,7 @@ if __name__ == '__main__':
     connect = Connect()
     client = connect.get_client()
     world = connect.get_world()
-    if 'Town03' in world.get_map().name:
-        print("already in Town03")
-    else:
-        print("going to Town03")
+    if 'Town03' not in world.get_map().name:
         client.load_world('Town03')
     spectator = world.get_spectator()
     spectator.set_transform(VIEWING_POINT)
