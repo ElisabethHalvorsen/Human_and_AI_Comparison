@@ -34,6 +34,7 @@ class MovingCars:
     def __init__(self, connect: Connect, frequency: int, weather_intensity: int):
         if not (0 <= frequency <= 100):
             raise ValueError("Frequency must be between 0 and 100")
+        print("cars come at a frequency of ", frequency)
         rospy.sleep(5)  # wait for carla to start
         self._connect = connect
         self._client = self._connect.get_client()
