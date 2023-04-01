@@ -46,6 +46,7 @@ max_clusters = population.shape[0]
 max_diversity = entropy([1] * max_clusters)  # shannon entropy
 diversity = entropy(cluster_sizes)  # shannon entropy
 print("Number of clusters:", len(unique_labels))
+print("Max number of clusters:", max_clusters)
 print("Cluster sizes:", cluster_sizes)
 print("Diversity:", diversity)
 print("Max diversity:", max_diversity)
