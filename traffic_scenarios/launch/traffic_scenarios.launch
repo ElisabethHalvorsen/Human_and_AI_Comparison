@@ -1,9 +1,8 @@
 <launch>
     <node name="car_spawning" pkg="traffic_scenarios" type="moving_cars_scenario.py" output="screen" respawn="true"/>
     <node name="weather_generator" pkg="traffic_scenarios" type="weather_scenario.py" output="screen"/>
-    <node name="pedestrian" pkg="traffic_scenarios" type="cross_scenario.py" output="screen" required="true"/>
-    <node name="setup_world" pkg="traffic_scenarios" type="setup_world.py" output="screen"/>
+    <node name="pedestrian" pkg="traffic_scenarios" type="cross_scenario.py" output="screen" respawn="true"/>
+    <node name="setup_world" pkg="traffic_scenarios" type="setup_world.py" />
     <node name="data_collection" pkg="safety_analysis" type="safety_measure.py"/>
-    <node name="auto_driver" pkg="vehicle_control" type="auto_control.py" required="true"/>
-
+    <node name="auto_driver" pkg="vehicle_control" type="auto_control.py" output="screen" required="true"/>
 </launch>
