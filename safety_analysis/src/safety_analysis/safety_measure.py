@@ -108,8 +108,8 @@ class SafetyMeasure:
     def main(self):
         name_id = self.get_scenario_name()
         out_name = f'{SCENARIO_GEN_PATH}/{name_id}.csv'
-        player_loc = self.player.get_transform().location
         while not rospy.is_shutdown():
+            player_loc = self.player.get_transform().location
             pp_trans, dist, player_rot = self.get_closest_transform()
             if self.rss_res:
                 for i in self.rss_res:
@@ -124,7 +124,9 @@ class SafetyMeasure:
                                                'Player Loc X': player_loc.x,
                                                'Player Loc Y': player_loc.y,
                                                'Player Loc Z': player_loc.z,
-                                               'Speed player': self.player.get_velocity()})
+                                               'Speed player X': self.player.get_velocity().x,
+                                               'Speed player Y': self.player.get_velocity().y,
+                                               'Speed player Z': self.player.get_velocity().z})
                     if os.path.exists(out_name):
                         df_outcome.to_csv(out_name, index=False, mode='a', header=False)
                     else:
@@ -141,7 +143,9 @@ class SafetyMeasure:
                                            'Player Loc X': player_loc.x,
                                            'Player Loc Y': player_loc.y,
                                            'Player Loc Z': player_loc.z,
-                                           'Speed player': self.player.get_velocity()})
+                                           'Speed player X': self.player.get_velocity().x,
+                                           'Speed player Y': self.player.get_velocity().y,
+                                           'Speed player Z': self.player.get_velocity().z})
                 if os.path.exists(out_name):
                     df_outcome.to_csv(out_name, index=False, mode='a', header=False)
                 else:
@@ -159,6 +163,5 @@ class SafetyMeasure:
 
 if __name__ == '__main__':
     rospy.init_node("safety_measure_node", anonymous=True)
-    print("GOING TO FILE")
     s = SafetyMeasure()
     s.main()
