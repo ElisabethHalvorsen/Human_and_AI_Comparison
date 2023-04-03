@@ -88,19 +88,6 @@ class MovingCars:
 
         cars = [carr1, carr2, carr3, carl1, carl2, carl3]
         self.run(cars, self._tm.get_port())
-        # rospy.sleep(0.5)
-        # port = self._tm.get_port()
-        # run(carl1, port)
-        # rospy.sleep(0.5)
-        # run(carr1, port)
-        # rospy.sleep(0.5)
-        # run(carl2, port)
-        # rospy.sleep(0.5)
-        # run(carr2, port)
-        # rospy.sleep(0.5)
-        # run(carl3, port)
-        # rospy.sleep(0.5)
-        # run(carr3, port)
 
     def main(self):
         if self._frequency == 0:
