@@ -111,7 +111,7 @@ class DisplayDangerousPoints:
 
 if __name__ == "__main__":
     rospy.init_node('complete_safety_evaluation')
-    # evaluation = Evaluation()
-    # evaluation.main()
+    evaluation = Evaluation()
+    evaluation.main()
     display = DisplayDangerousPoints()
     display.display_all_collision_points()
