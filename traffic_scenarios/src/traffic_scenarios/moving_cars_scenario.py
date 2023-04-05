@@ -51,7 +51,6 @@ class MovingCars:
         self.weather_intensity = weather_intensity
 
     def set_dangerous_behaviour(self, car):
-        # self._tm.distance_to_leading_vehicle(car, 0)
         self._tm.vehicle_percentage_speed_difference(car, -30)
         self._tm.ignore_vehicles_percentage(car, self.weather_intensity)
         self._tm.keep_right_rule_percentage(car, self.weather_intensity)
@@ -72,12 +71,11 @@ class MovingCars:
                 car.set_autopilot(True, tm_port)
                 rospy.sleep(0.2)
                 self.set_dangerous_behaviour(car)
-                # print("setting behaviour")
 
     def spawn_actor(self, transform: Transform, bp):
         return self._connect.get_world().try_spawn_actor(bp, transform)
 
-    def spawn_left_and_right_car(self):
+    def spawn_left_and_right_cars(self):
         carr1 = self.spawn_actor(RIGHT_START_1, random.choice(self.vehicle_choices))
         carr2 = self.spawn_actor(RIGHT_START_2, random.choice(self.vehicle_choices))
         carr3 = self.spawn_actor(RIGHT_START_3, random.choice(self.vehicle_choices))
@@ -92,12 +90,12 @@ class MovingCars:
     def main(self):
         if self._frequency == 0:
             return
-        self.spawn_left_and_right_car()
+        self.spawn_left_and_right_cars()
         time = rospy.Time.now()
 
         while not rospy.is_shutdown():
             if time + rospy.Duration(self._frequency) < rospy.Time.now():
-                self.spawn_left_and_right_car()
+                self.spawn_left_and_right_cars()
                 time = rospy.Time.now()
 
 
